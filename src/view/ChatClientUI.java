@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.ScrollPane;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -133,8 +134,11 @@ public class ChatClientUI {
 		panelTeilnehmerListe.setLayout(new BorderLayout(0, 0));
 		
 		teilnehmer = new JTextArea();
+		teilnehmer.setDisabledTextColor(Color.BLUE);
+		teilnehmer.setFont(new Font("Arial", Font.BOLD, 13));
 		teilnehmer.setEditable(false);
 		teilnehmer.setEnabled(false);
+		teilnehmer.setLineWrap(true);
 		panelTeilnehmerListe.add(teilnehmer, BorderLayout.CENTER);
 		overviewPanelNorthSplitPane.setDividerLocation(20); // DIVIDER Zwischen TeilnehmerHeader und der TeilnehmerListe
 		

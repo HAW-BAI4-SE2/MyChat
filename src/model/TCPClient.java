@@ -5,19 +5,20 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCPClient extends Thread{
 
     /* Portnummer */
-    private final int serverPort;
+    private int serverPort;
 
     /* Hostname */
-    private final String hostname;
+    private String hostname;
     
     /* Chatname */
-    private final String chatName;
+    private String chatName;
 
     private Socket clientSocket; // TCP-Standard-Socketklasse
 
@@ -27,22 +28,26 @@ public class TCPClient extends Thread{
     
     List<ClientObserver> observer;
     
+    public String teilnehmer;
+    
     private boolean serviceRequested = true; // Client beenden?
 
-    public TCPClient(String hostname, int serverPort, String chatName) {
+    public TCPClient(String hostname, int serverPort, String chatName) throws UnknownHostException, IOException {
         this.serverPort = serverPort;
-        this.hostname = hostname;
-        this.chatName = chatName;
-        this.nachrichtenVerlauf = new StringBuffer();
-        observer = new ArrayList<>();
+        init(hostname,chatName);
     }
     
     public TCPClient(String hostname, String chatName) throws IOException{
         this.serverPort = 56789;
+        init(hostname,chatName);
+    }
+
+    public void init(String hostname,String chatName) throws UnknownHostException, IOException{  	
         this.hostname = hostname;
         this.chatName = chatName;
         this.nachrichtenVerlauf = new StringBuffer();
         observer = new ArrayList<>();
+        teilnehmer ="";
         
         /* Socket erzeugen --> Verbindungsaufbau mit dem Server */
         clientSocket = new Socket(hostname, serverPort);
@@ -52,11 +57,11 @@ public class TCPClient extends Thread{
         inFromServer = new BufferedReader(new InputStreamReader(
         		clientSocket.getInputStream()));
     }
-
+    
     public void run(){
         /* Client starten. Ende, wenn quit eingegeben wurde */
         String modifiedSentence; // vom Server modifizierter String
-
+        nachrichtenVerlauf = new StringBuffer();
         try {
 	        
             while (serviceRequested) {
@@ -65,19 +70,25 @@ public class TCPClient extends Thread{
                 modifiedSentence = readFromServer();
 
                 /* Test, ob Client beendet werden soll */
-                if (modifiedSentence.startsWith("CLIENT_QUIT:"+chatName)) {
+                if (modifiedSentence.startsWith("CLIENT_QUIT:OK")) {
                     
                 	serviceRequested = false;
-                } else{
-                	nachrichtenVerlauf.append("\n"+modifiedSentence);                	
-                	informiereObserver();                	
+                	modifiedSentence = readFromServer(); // Verabschiedung lesen 
+                } else if(modifiedSentence.startsWith("CHAT_MEMBERS:UPDATED")){
+                	teilnehmer = readFromServer();
+                } else {
+                	nachrichtenVerlauf.append("\n"+modifiedSentence);                	                	
                 }
+            	informiereObserver(); 
             }
+            nachrichtenVerlauf.append("<Tschüss, "+chatName +"! Bis zum nächsten mal!>");
+            informiereObserver();
 			clientSocket.close();
 	        
         } catch (IOException e) {
 //            throw new IOException("Connection aborted by server!");
-        } 
+        	e.printStackTrace();
+        }
         System.out.println("TCP Client stopped!");
     }
 
@@ -91,11 +102,6 @@ public class TCPClient extends Thread{
         /* Lies die Antwort (reply) vom Server */
         String reply = inFromServer.readLine();
         System.out.println("TCP Client got from Server: " + reply);
-//        int c;
-//        while ( (c = inputStream.read()) != -1){ // -1 soll das Ende signalisieren
-//        	System.out.println("Hier fehlt der Inhalt");
-//          stringBuffer.append( (char) c);
-//        }
         
         return reply;
 

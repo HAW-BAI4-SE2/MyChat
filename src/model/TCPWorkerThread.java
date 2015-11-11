@@ -59,6 +59,13 @@ class TCPWorkerThread extends Thread {
 	      
 	      writeToClient("ChatName:OK");
 	      
+	      String nachricht = server.addTextnachricht("Server", "Willkommen an Bord! " + this.getName() + " hat den Chatraum betreten.");
+	      server.writeToClients(nachricht);
+	      
+	      nachricht = "CHAT_MEMBERS:UPDATED";
+	      server.writeToClients(nachricht);
+	      server.writeToClients(server.chatTeilnehmer.toString());
+	      
 	      // ************** Auf Anfragen des Clients reagieren **************
 	      while (workerServiceRequested) {
 
@@ -66,43 +73,53 @@ class TCPWorkerThread extends Thread {
 	         
 	         /* Test, ob Arbeitsthread beendet werden soll */
 	         if (userSentence.startsWith("SERVER_QUIT:"+this.getName())) {
+	        	 server.entferneUser(this.getName());
 	        	 writeToClient("CLIENT_QUIT:OK");
+	        	 
+  		   		 nachricht = server.addTextnachricht("Server", this.getName() + " hat den Chatraum verlassen.");
+	  		   	 System.out.println("von wegen leer:"+nachricht);
+  		   		 server.writeToClients(nachricht);
+			   
 	        	 workerServiceRequested = false;
-	        	 break;
+//	        	 break;
 	         }
 	         
 	         /* die Nachricht des Clients verarbeiten */
-	         String nachricht = server.addTextnachricht(this.getName(),userSentence);
-	         
-	         server.writeToClient(nachricht);
+	         nachricht = server.addTextnachricht(this.getName(),userSentence);	         
+	         server.writeToClients(nachricht);
 	      }
 	
 	      /* Socket-Streams schliessen --> Verbindungsabbau */
 	      socket.close();
 	   } catch (IOException e) {
-	      System.err.println("Connection aborted by client!");
+		  System.err.println("Verbindung konnte nicht hergestellt werden.");
+	      e.printStackTrace();
 	   } catch (UnknownUserException e) {
 			try {
 				writeToClient("ChatName:Missing");
 			} catch (IOException e1) {
+				System.err.println("Verbindung konnte nicht hergestellt werden.");
 				e1.printStackTrace(); // Connection abborted
 			}
 		} catch (IllegalArgumentException e) {
 			try {
 				writeToClient("ChatName:NotAllowed");
 			} catch (IOException e1) {
+				System.err.println("Verbindung konnte nicht hergestellt werden.");
 				e1.printStackTrace(); // Connection abborted
 			}
 		} catch (UserAlreadyExistsException e) {
 			try {
 				writeToClient("ChatName:UserAlreadyExists");
 			} catch (IOException e1) {
+				System.err.println("Verbindung konnte nicht hergestellt werden.");
 				e1.printStackTrace(); // Connection abborted
 			}
-		} finally {
+		}  finally {
 			System.out.println("TCP Worker Thread " + this.getName() + " stopped!");
 	      /* Platz fuer neuen Thread freigeben */
-			server.workerThreadsSem.release();         
+			server.workerThreadsSem.release();
+			server.workerThreads.remove(this);
 		}
 	}
 	

@@ -47,8 +47,7 @@ public class ChatClientController implements ClientObserver
 				try {
 					nachrichtSenden();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Die Nachricht konnte nicht gesendet werden.");
 				}
 			}
 		});
@@ -90,7 +89,9 @@ public class ChatClientController implements ClientObserver
 					ausChatRaumAbmelden();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					// hier könnte es entweder sein, dass man 
+					// bereits abgemeldet war oder die verbindung unterbrochen wurde
+//					JOptionPane.showMessageDialog(null, "");
 				}
 			}
 		});
@@ -141,6 +142,9 @@ public class ChatClientController implements ClientObserver
      * dafür sorgt, dass die Verbindung mit dem Chatraum hergestellt wird.
      */
 	private void raumBetreten(String hostname, String chatName) throws IOException, IllegalAccessException {
+		if(client != null){
+			client.abmelden();
+		}
 		client = new TCPClient(hostname,chatName); 
 		client.addObserver(this);
 		client.anmelden(); // 
@@ -176,6 +180,9 @@ public class ChatClientController implements ClientObserver
 		System.out.println("ClientController wurde über Nachricht informiert.");
 		String nachrichtenVerlauf = client.getNachrichtenverlauf();
 		ui.getChatOutputTextArea().setText(nachrichtenVerlauf);
+		
+		String teilnehmer = client.teilnehmer;
+		ui.getTeilnehmer().setText(teilnehmer);
 	}
     
 }

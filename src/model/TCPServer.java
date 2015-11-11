@@ -80,7 +80,7 @@ public class TCPServer {
    }
 
    /**
-    * Der Server speichert außerdem den gesamten Chatverlauf.
+    * Der Server speichert den gesamten Chatverlauf.
     * Mithilfe dieser Methode kann man eine Nachricht hinzufügen.
     * @param chatName Der Benutzer von dem die Nachricht gekommen ist.
     * @param nachricht Die Nachricht, die der Benutzer gesendet hat.
@@ -114,8 +114,9 @@ public class TCPServer {
     * @throws UnknownUserException Wenn das Protokoll nicht richtig gelesen werden kann.
     * @throws IllegalArgumentException Wenn der Name ungültig ist. (Zum Beispiel ein leerer Name)
     * @throws UserAlreadyExistsException Wenn der Chatname bereits vergeben ist in dem Chatraum.
+    * @throws IOException 
     */
-   public String userRegistrieren(String userProtocol) throws UnknownUserException, IllegalArgumentException, UserAlreadyExistsException {
+   public String userRegistrieren(String userProtocol) throws UnknownUserException, IllegalArgumentException, UserAlreadyExistsException, IOException {
 		String prefix = "ChatName:";
 		if(!userProtocol.startsWith(prefix)){
 			throw new UnknownUserException();
@@ -133,11 +134,20 @@ public class TCPServer {
 		return chatname;
 	}
    
+   public void entferneUser(String chatname) throws IOException, UnknownUserException{
+	   if(isUser(chatname)){
+		   chatTeilnehmer.remove(chatname);
+	   } else{
+		   throw new UnknownUserException();
+	   }
+   }
+   
+   
    	public String getChatVerlauf(){
    		return chatVerlauf.toString();
    	}
 
-	public void writeToClient(String nachricht) throws IOException {
+	public void writeToClients(String nachricht) throws IOException {		
 		for(TCPWorkerThread t : workerThreads){
 			t.writeToClient(nachricht);
 		}
