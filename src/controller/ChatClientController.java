@@ -49,9 +49,10 @@ public class ChatClientController
 				String chatName = beitrittsUi.getChatName().getText();
 
 				// TODO wann erzeugt man den Client genau? Es ist zu spät hier am Abend ^^
-				client = new TCPClient(); 
 				try{
-					client.anmelden(hostname,chatName);
+					client = new TCPClient(hostname,chatName); 
+					client.start();
+					client.anmelden();
 					beitrittsUi.getFrame().setVisible(false);
 				} catch(Exception ex){
 					ex.printStackTrace();
@@ -146,8 +147,4 @@ public class ChatClientController
     	beitrittsUi.showUI();
     }
     
-	public static void main(String[] args)
-    {
-        ChatClientController controller = new ChatClientController();
-    }
 }
