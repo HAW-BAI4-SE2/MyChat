@@ -1,14 +1,14 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.util.Observable;
+import java.awt.FlowLayout;
+import java.awt.Font;
 
-import javax.swing.Box.Filler;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -16,108 +16,138 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
-public class ChatClientUI extends Observable
-{
-    JFrame frame; 
-    JButton anmelden;
-    JButton abmelden;
-    JButton beenden;
-    JTextArea chatArea;
-    
-    
-    /**
-     * Initialisiert die UI.
-     */
-    public ChatClientUI(){
+public class ChatClientUI {
+
+	private JFrame frame;
+	
+	private JMenuItem mntmBeenden;
+	private JMenuItem mntmRaumBetreten;
+	private JButton btnNachrichtSenden;
+	
+	private JTextArea chatInputTextArea;
+	private JTextArea chatOutputTextArea;
+	private JTextArea teilnehmer;
+
+
+	/**
+	 * Create the application.
+	 */
+	public ChatClientUI() {
+		initialize();
+	}
+
+	/**
+	 * Initialisiert die UI. 
+	 */
+	private void initialize() {
         int width = 600;
         int height = 400;
-        frame = new JFrame("MyChat24");
-        JPanel levelNullPanel = new JPanel(new BorderLayout()); 
-        JSplitPane splitPane = new JSplitPane();
-        JPanel levelEinsPanelLeft = new JPanel(new GridLayout(0, 2));
-        JSplitPane levelEinsPanelRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        JScrollPane levelZweiPanelNorth = new JScrollPane();
-        JScrollPane levelZweiPanelSouth = new JScrollPane();
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menuProgramm = new JMenu("MyChat");
-        JMenuItem beendenMenuItem = new JMenuItem("Beenden");
-        chatArea = new JTextArea();
+        int heightDivider = (int) (height*0.75); // 3/4 der Höhe
         
-        // ************************* Level 0 - Das unterste Panel *************************
-        frame.setJMenuBar(menuBar);
-        menuBar.add(menuProgramm);
-        menuProgramm.add(beendenMenuItem);
-        frame.add(levelNullPanel);
-        levelNullPanel.add(splitPane);
-
-        // ************************* Level 1 - Das SplitPane  *************************
-        splitPane.setLeftComponent(levelEinsPanelLeft);
-        splitPane.setRightComponent(levelEinsPanelRight);
-        
-        // ************************* Level 1.Left - Das linke Panel  *************************
-        int widthLeftPanel = (int) (width * 0.25); // 1/4 der Breite
-        levelEinsPanelLeft.setPreferredSize(new Dimension(widthLeftPanel,height));
-        
-        GroupLayout leftPanelLayout = new GroupLayout(levelEinsPanelLeft);
-        levelEinsPanelLeft.setLayout(leftPanelLayout);
-        
-        leftPanelLayout.setHorizontalGroup(
-                leftPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(widthLeftPanel, widthLeftPanel, widthLeftPanel)
-        );
-        
-        // ************************* Level 1.Right - Das rechte Panel  *************************
-        int widthRightPanel = (int) (width*0.75); // 3/4 der Breite
-        levelEinsPanelRight.setPreferredSize(new Dimension(widthRightPanel,height));
-        levelEinsPanelRight.setTopComponent(levelZweiPanelNorth);
-        levelEinsPanelRight.setBottomComponent(levelZweiPanelSouth);
-        
-        // ************************* Level 2.Rechts.North - Der Chatverlauf  *************************
-        int heightRightPanelNorth = (int) (height*0.75); // 3/4 der HÃ¶he
-        
-        Dimension north = new Dimension(widthRightPanel, heightRightPanelNorth);
-        Filler fillerNorth = new Filler(north,north,north);
-        levelZweiPanelNorth.setPreferredSize(new Dimension(widthRightPanel,heightRightPanelNorth));
-        levelZweiPanelNorth.setViewportView(fillerNorth);
-//        GroupLayout northPanelLayout = new GroupLayout(levelZweiPanelNorth);
-//        levelZweiPanelNorth.setLayout(northPanelLayout);
-//        
-//        northPanelLayout.setHorizontalGroup(
-//                northPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//            .addGap(widthRightPanel, widthRightPanel, widthRightPanel)
-//        );
-        
-        // ************************* Level 2.Rechts.South - Das Eingabefeld  *************************
-        int heightRightPanelSouth = (int) (height*0.25); // 1/4 der HÃ¶he
-        Dimension south = new Dimension(widthRightPanel, heightRightPanelSouth);
-        Filler fillerSouth = new Filler(south,south,south);
-        levelZweiPanelSouth.setPreferredSize(new Dimension(widthRightPanel,heightRightPanelSouth));
-        levelZweiPanelSouth.setViewportView(fillerSouth);
-        
-        
-//        GroupLayout southPanelLayout = new GroupLayout(levelZweiPanelSouth);
-//        levelZweiPanelSouth.setLayout(southPanelLayout);
-//        
-//        southPanelLayout.setHorizontalGroup(
-//                southPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//            .addGap(widthRightPanel, widthRightPanel, widthRightPanel)
-//        );
-        // ************************* Frame-Settings *************************
-        // Client muss Ã¼ber beenden Button geschlossen werden
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); 
-        frame.setSize(width,height);
-        frame.setLocationRelativeTo(null);
-        
-        frame.pack();
-    }
-    
-    public void addActionListener(){
-        
-    }
-    
-    
+		frame = new JFrame();
+		frame.setSize(width,height);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.setResizable(false);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		JMenu mntmName = new JMenu("MyChat24");
+		menuBar.add(mntmName);
+		
+		mntmRaumBetreten = new JMenuItem("Chatraum beitreten");
+		mntmName.add(mntmRaumBetreten);
+		
+		mntmBeenden = new JMenuItem("Programm beenden");
+		mntmName.add(mntmBeenden);
+		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setContinuousLayout(true);
+		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+		
+		JPanel chatArea = new JPanel();
+		splitPane.setRightComponent(chatArea);
+		chatArea.setLayout(new BorderLayout(0, 0));
+		
+		JSplitPane chatAreaSplitPane = new JSplitPane();
+		chatAreaSplitPane.setContinuousLayout(true);
+		chatAreaSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		chatArea.add(chatAreaSplitPane, BorderLayout.CENTER);
+		
+		JPanel chatPanelSouth = new JPanel();
+		chatAreaSplitPane.setRightComponent(chatPanelSouth);
+		chatPanelSouth.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane chatInputScrollPane = new JScrollPane();
+		chatPanelSouth.add(chatInputScrollPane, BorderLayout.CENTER);
+		
+		chatInputTextArea = new JTextArea();
+		chatInputTextArea.setLineWrap(true);
+		chatInputScrollPane.setViewportView(chatInputTextArea);
+		
+		JPanel chatPanelNorth = new JPanel();
+		chatAreaSplitPane.setLeftComponent(chatPanelNorth);
+		chatPanelNorth.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane chatOutputScrollPane = new JScrollPane();
+		chatPanelNorth.add(chatOutputScrollPane, BorderLayout.CENTER);
+		
+		chatOutputTextArea = new JTextArea();
+		chatOutputTextArea.setDisabledTextColor(Color.BLUE);
+		chatOutputTextArea.setFont(new Font("Arial", Font.BOLD, 13));
+		chatOutputTextArea.setEditable(false);
+		chatOutputTextArea.setEnabled(false);
+		chatOutputTextArea.setLineWrap(true);
+		chatOutputScrollPane.setViewportView(chatOutputTextArea);
+		chatAreaSplitPane.setDividerLocation(heightDivider); // DIVIDER ChatArea
+		
+		JPanel overviewPanel = new JPanel();
+		splitPane.setLeftComponent(overviewPanel);
+		overviewPanel.setLayout(new BorderLayout(0, 0));
+		
+		JSplitPane overviewSplitPane = new JSplitPane();
+		overviewSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		overviewPanel.add(overviewSplitPane, BorderLayout.CENTER);
+		
+		JPanel overviewPanelNorth = new JPanel();
+		overviewSplitPane.setLeftComponent(overviewPanelNorth);
+		overviewPanelNorth.setLayout(new BorderLayout(0, 0));
+		
+		JSplitPane overviewPanelNorthSplitPane = new JSplitPane();
+		overviewPanelNorthSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		overviewPanelNorth.add(overviewPanelNorthSplitPane, BorderLayout.NORTH);
+		
+		JPanel panelTeilnehmerHeader = new JPanel();
+		overviewPanelNorthSplitPane.setLeftComponent(panelTeilnehmerHeader);
+		panelTeilnehmerHeader.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblChatTeilnehmer = new JLabel("Chat Teilnehmer");
+		panelTeilnehmerHeader.add(lblChatTeilnehmer, BorderLayout.CENTER);
+		
+		JPanel panelTeilnehmerListe = new JPanel();
+		panelTeilnehmerListe.setPreferredSize(new Dimension(10, 80));
+		overviewPanelNorthSplitPane.setRightComponent(panelTeilnehmerListe);
+		panelTeilnehmerListe.setLayout(new BorderLayout(0, 0));
+		
+		teilnehmer = new JTextArea();
+		teilnehmer.setEditable(false);
+		teilnehmer.setEnabled(false);
+		panelTeilnehmerListe.add(teilnehmer, BorderLayout.CENTER);
+		overviewPanelNorthSplitPane.setDividerLocation(20); // DIVIDER Zwischen TeilnehmerHeader und der TeilnehmerListe
+		
+		JPanel overviewPanelSouth = new JPanel();
+		overviewSplitPane.setRightComponent(overviewPanelSouth);
+		overviewPanelSouth.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		btnNachrichtSenden = new JButton("Senden");
+		overviewPanelSouth.add(btnNachrichtSenden);
+		overviewSplitPane.setDividerLocation(heightDivider-10); // DIVIDER des Overview-Splitpanes
+		splitPane.setDividerLocation(100);
+	}
+	
     /**
      *  Zeigt die UI an.
      *  
@@ -125,4 +155,69 @@ public class ChatClientUI extends Observable
     public void showUI(){
         frame.setVisible(true);
     }
+
+    /**
+     * Liefert das "Programm Beenden" JMenuItem.
+     * @return das "Programm Beenden" JMenuItem.
+     */
+	public JMenuItem getMntmBeenden() {
+		return mntmBeenden;
+	}
+
+	/**
+	 * Liefert das "Raum betreten" JMenuItem
+	 * @return das "Raum betreten" JMenuItem
+	 */
+	public JMenuItem getMntmRaumBetreten() {
+		return mntmRaumBetreten;
+	}
+
+	/**
+	 * Liefert das "Nachricht senden" JMenuItem
+	 * @return das "Nachricht senden" JMenuItem
+	 */
+	public JButton getBtnNachrichtSenden() {
+		return btnNachrichtSenden;
+	}
+    
+	/**
+	 * Liefert die Input JTextArea
+	 * @return die Input JTextArea
+	 */
+	public JTextArea getChatInputTextArea() {
+		return chatInputTextArea;
+	}
+
+	/**
+	 * Liefert die Output JTextArea
+	 * @return die Output JTextArea
+	 */
+	public JTextArea getChatOutputTextArea() {
+		return chatOutputTextArea;
+	}
+
+	/**
+	 *  Liefert die Teilnehmer JTextArea // TODO Hier wäre eigentlich eine JList cooler
+	 * @return die Teilnehmer JTextArea
+	 */
+	public JTextArea getTeilnehmer() {
+		return teilnehmer;
+	}
+
+    
+//	/**
+//	 * Launch the application.
+//	 */
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					ChatClient_UI window = new ChatClient_UI();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 }
