@@ -67,7 +67,7 @@ public class TCPServer {
              * Standard-Socket erzeugen und an connectionSocket zuweisen
              */
             connectionSocket = welcomeSocket.accept();
-
+            connectionSocket.setSoLinger(true, 0); // ermöglicht ein schnelleres Schließen des Sockets
             
             /* Neuen Arbeits-Thread erzeugen und die Nummer, den Socket sowie das Serverobjekt uebergeben */
             TCPWorkerThread worker = new TCPWorkerThread(++nextThreadNumber, connectionSocket, this);

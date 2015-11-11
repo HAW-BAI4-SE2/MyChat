@@ -142,7 +142,7 @@ public class ChatClientController implements ClientObserver
      * dafür sorgt, dass die Verbindung mit dem Chatraum hergestellt wird.
      */
 	private void raumBetreten(String hostname, String chatName) throws IOException, IllegalAccessException {
-		if(client != null){
+		if(client != null && client.serviceRequested){
 			client.abmelden();
 		}
 		client = new TCPClient(hostname,chatName); 

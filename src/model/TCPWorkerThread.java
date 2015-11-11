@@ -78,10 +78,11 @@ class TCPWorkerThread extends Thread {
 	        	 
   		   		 nachricht = server.addTextnachricht("Server", this.getName() + " hat den Chatraum verlassen.");
 	  		   	 System.out.println("von wegen leer:"+nachricht);
+	  		   	 
   		   		 server.writeToClients(nachricht);
 			   
 	        	 workerServiceRequested = false;
-//	        	 break;
+	        	 break;
 	         }
 	         
 	         /* die Nachricht des Clients verarbeiten */

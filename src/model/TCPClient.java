@@ -30,7 +30,7 @@ public class TCPClient extends Thread{
     
     public String teilnehmer;
     
-    private boolean serviceRequested = true; // Client beenden?
+    public boolean serviceRequested = true; // Client beenden?
 
     public TCPClient(String hostname, int serverPort, String chatName) throws UnknownHostException, IOException {
         this.serverPort = serverPort;
@@ -81,7 +81,7 @@ public class TCPClient extends Thread{
                 }
             	informiereObserver(); 
             }
-            nachrichtenVerlauf.append("<Tschüss, "+chatName +"! Bis zum nächsten mal!>");
+            nachrichtenVerlauf.append("\n<Tschüss, "+chatName +"! Bis zum nächsten mal!>");
             informiereObserver();
 			clientSocket.close();
 	        
