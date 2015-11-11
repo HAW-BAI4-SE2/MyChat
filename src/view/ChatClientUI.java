@@ -21,7 +21,7 @@ public class ChatClientUI {
 
 	private JFrame frame;
 	
-	private JMenuItem mntmBeenden;
+	private JMenuItem mntmAbmelden;
 	private JMenuItem mntmRaumBetreten;
 	private JButton btnNachrichtSenden;
 	
@@ -60,8 +60,8 @@ public class ChatClientUI {
 		mntmRaumBetreten = new JMenuItem("Chatraum beitreten");
 		mntmName.add(mntmRaumBetreten);
 		
-		mntmBeenden = new JMenuItem("Programm beenden");
-		mntmName.add(mntmBeenden);
+		mntmAbmelden = new JMenuItem("Abmelden");
+		mntmName.add(mntmAbmelden);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JSplitPane splitPane = new JSplitPane();
@@ -157,11 +157,11 @@ public class ChatClientUI {
     }
 
     /**
-     * Liefert das "Programm Beenden" JMenuItem.
-     * @return das "Programm Beenden" JMenuItem.
+     * Liefert das "Abmelden" JMenuItem.
+     * @return das "Abmelden" JMenuItem.
      */
-	public JMenuItem getMntmBeenden() {
-		return mntmBeenden;
+	public JMenuItem getMntmAbmelden() {
+		return mntmAbmelden;
 	}
 
 	/**
