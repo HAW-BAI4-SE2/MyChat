@@ -46,7 +46,7 @@ public class TCPServer {
    }
 
    /**
-    * Startet dem Server und kümmert sich darum, dass jedem neuen Client ein neuer WorkerThread zugewiesen wird.
+    * Startet dem Server und kï¿½mmert sich darum, dass jedem neuen Client ein neuer WorkerThread zugewiesen wird.
     */
    public void startServer() {
       ServerSocket welcomeSocket; // TCP-Server-Socketklasse
@@ -67,7 +67,7 @@ public class TCPServer {
              * Standard-Socket erzeugen und an connectionSocket zuweisen
              */
             connectionSocket = welcomeSocket.accept();
-            connectionSocket.setSoLinger(true, 0); // ermöglicht ein schnelleres Schließen des Sockets
+            connectionSocket.setSoLinger(true, 0); // ermï¿½glicht ein schnelleres Schlieï¿½en des Sockets
             
             /* Neuen Arbeits-Thread erzeugen und die Nummer, den Socket sowie das Serverobjekt uebergeben */
             TCPWorkerThread worker = new TCPWorkerThread(++nextThreadNumber, connectionSocket, this);
@@ -81,12 +81,12 @@ public class TCPServer {
 
    /**
     * Der Server speichert den gesamten Chatverlauf.
-    * Mithilfe dieser Methode kann man eine Nachricht hinzufügen.
+    * Mithilfe dieser Methode kann man eine Nachricht hinzufï¿½gen.
     * @param chatName Der Benutzer von dem die Nachricht gekommen ist.
     * @param nachricht Die Nachricht, die der Benutzer gesendet hat.
     * @return Den Nachrichteneintrag
     */
-   public String addTextnachricht(String chatName, String nachricht){
+   public synchronized String addTextnachricht(String chatName, String nachricht){
        Calendar cal = Calendar.getInstance();
        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
        String eintrag = "\n"+chatName+" ("+sdf.format(cal.getTime())+"): "+nachricht;
@@ -95,11 +95,11 @@ public class TCPServer {
    }
    
    /**
-    * Gibt Auskunft darüber, ob ein Chatname bereits vergeben wurde.
-    * @param name Der zu überprüfende Name
+    * Gibt Auskunft darï¿½ber, ob ein Chatname bereits vergeben wurde.
+    * @param name Der zu ï¿½berprï¿½fende Name
     * @return
     */
-   public boolean isUser(String name){
+   public synchronized boolean isUser(String name){
 	   if(chatTeilnehmer.contains(name)){
 		   return true;
 	   }
@@ -108,15 +108,15 @@ public class TCPServer {
 
    /**
     * Der Server verwaltet alle User des Chatraumes.
-    * Mithilfe diser Methode kann man neue Teilnehmer in den Raum einfügen.
-    * @param userProtocol Ein Protokoll, um den User bekannt zu geben. Muss die Form "ChatName:hierNameEinfügen" besitzen.
-    * @return den tatsächlichen Chatnamen
+    * Mithilfe diser Methode kann man neue Teilnehmer in den Raum einfï¿½gen.
+    * @param userProtocol Ein Protokoll, um den User bekannt zu geben. Muss die Form "ChatName:hierNameEinfï¿½gen" besitzen.
+    * @return den tatsï¿½chlichen Chatnamen
     * @throws UnknownUserException Wenn das Protokoll nicht richtig gelesen werden kann.
-    * @throws IllegalArgumentException Wenn der Name ungültig ist. (Zum Beispiel ein leerer Name)
+    * @throws IllegalArgumentException Wenn der Name ungï¿½ltig ist. (Zum Beispiel ein leerer Name)
     * @throws UserAlreadyExistsException Wenn der Chatname bereits vergeben ist in dem Chatraum.
     * @throws IOException 
     */
-   public String userRegistrieren(String userProtocol) throws UnknownUserException, IllegalArgumentException, UserAlreadyExistsException, IOException {
+   public synchronized String userRegistrieren(String userProtocol) throws UnknownUserException, IllegalArgumentException, UserAlreadyExistsException, IOException {
 		String prefix = "ChatName:";
 		if(!userProtocol.startsWith(prefix)){
 			throw new UnknownUserException();
@@ -134,7 +134,7 @@ public class TCPServer {
 		return chatname;
 	}
    
-   public void entferneUser(String chatname) throws IOException, UnknownUserException{
+   public synchronized void entferneUser(String chatname) throws IOException, UnknownUserException{
 	   if(isUser(chatname)){
 		   chatTeilnehmer.remove(chatname);
 	   } else{
@@ -143,11 +143,11 @@ public class TCPServer {
    }
    
    
-   	public String getChatVerlauf(){
+   	public synchronized String getChatVerlauf(){
    		return chatVerlauf.toString();
    	}
 
-	public void writeToClients(String nachricht) throws IOException {		
+	public synchronized void writeToClients(String nachricht) throws IOException {		
 		for(TCPWorkerThread t : workerThreads){
 			t.writeToClient(nachricht);
 		}

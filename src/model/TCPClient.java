@@ -72,8 +72,8 @@ public class TCPClient extends Thread{
                 /* Test, ob Client beendet werden soll */
                 if (modifiedSentence.startsWith("CLIENT_QUIT:OK")) {
                     
+                	writeToServer("SERVER_QUIT:OK");
                 	serviceRequested = false;
-                	modifiedSentence = readFromServer(); // Verabschiedung lesen 
                 } else if(modifiedSentence.startsWith("CHAT_MEMBERS:UPDATED")){
                 	teilnehmer = readFromServer();
                 } else {
@@ -81,7 +81,9 @@ public class TCPClient extends Thread{
                 }
             	informiereObserver(); 
             }
-            nachrichtenVerlauf.append("\n<Tschüss, "+chatName +"! Bis zum nächsten mal!>");
+//            this.sleep(2000);
+            nachrichtenVerlauf.append("\n<TschÃ¼ss, "+chatName +"! Bis zum nÃ¤chsten mal!>");
+            teilnehmer = "";
             informiereObserver();
 			clientSocket.close();
 	        
@@ -89,6 +91,11 @@ public class TCPClient extends Thread{
 //            throw new IOException("Connection aborted by server!");
         	e.printStackTrace();
         }
+//        catch (InterruptedException e)
+//        {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         System.out.println("TCP Client stopped!");
     }
 
@@ -125,7 +132,7 @@ public class TCPClient extends Thread{
 	}
 	
 	/**
-	 * Ermöglicht es sich als Client beim Chat abzumelden.
+	 * Ermï¿½glicht es sich als Client beim Chat abzumelden.
 	 * @throws IOException
 	 */
 	public void abmelden() throws IOException{
@@ -148,7 +155,7 @@ public class TCPClient extends Thread{
 	}
 	
     /**
-     * Mit addObserver kann man diesem Client einen Beobachter hinzufügen.
+     * Mit addObserver kann man diesem Client einen Beobachter hinzufï¿½gen.
      * @param o
      */
     public void addObserver(ClientObserver o){

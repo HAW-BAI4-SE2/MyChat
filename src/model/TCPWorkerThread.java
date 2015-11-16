@@ -37,15 +37,13 @@ class TCPWorkerThread extends Thread {
 	 * Diese Methode arbeitet nach folgendem Protokoll:
 	 * 
 	 * 1. User-Registrierung
-	 * 		- handelt es sich um einen gültigen Namen? (Bereits vergeben?)
+	 * 		- handelt es sich um einen gï¿½ltigen Namen? (Bereits vergeben?)
 	 * 2. Auf Anfragen des Clients reagieren.
 	 * 
 	 */
 	public void run() {
 	   String userSentence;
 	
-	   System.out.println("TCP Worker Thread " + this.getName() +
-	         " is running until SERVER_QUIT:"+this.getName() +" is received!");
 	
 	   try {
 	      /* Socket-Basisstreams durch spezielle Streams filtern */
@@ -66,6 +64,8 @@ class TCPWorkerThread extends Thread {
 	      server.writeToClients(nachricht);
 	      server.writeToClients(server.chatTeilnehmer.toString());
 	      
+	      System.out.println("TCP Worker Thread " + this.getName() +
+	    		  " is running until SERVER_QUIT:"+this.getName() +" is received!");
 	      // ************** Auf Anfragen des Clients reagieren **************
 	      while (workerServiceRequested) {
 
@@ -74,15 +74,15 @@ class TCPWorkerThread extends Thread {
 	         /* Test, ob Arbeitsthread beendet werden soll */
 	         if (userSentence.startsWith("SERVER_QUIT:"+this.getName())) {
 	        	 server.entferneUser(this.getName());
-	        	 writeToClient("CLIENT_QUIT:OK");
-	        	 
-  		   		 nachricht = server.addTextnachricht("Server", this.getName() + " hat den Chatraum verlassen.");
-	  		   	 System.out.println("von wegen leer:"+nachricht);
-	  		   	 
-  		   		 server.writeToClients(nachricht);
-			   
-	        	 workerServiceRequested = false;
-	        	 break;
+	        	 nachricht = server.addTextnachricht("Server", this.getName() + " hat den Chatraum verlassen.");
+                 server.writeToClients(nachricht);
+                 writeToClient("CLIENT_QUIT:OK");
+                 
+                 nachricht = readFromClient();
+                 if(nachricht.equals("SERVER_QUIT:OK")){
+                	 workerServiceRequested = false;
+                 }
+                 break;                	 
 	         }
 	         
 	         /* die Nachricht des Clients verarbeiten */
@@ -97,30 +97,39 @@ class TCPWorkerThread extends Thread {
 	      e.printStackTrace();
 	   } catch (UnknownUserException e) {
 			try {
-				writeToClient("ChatName:Missing");
+				writeToClient("SERVER_QUIT:UNKNOWN_USER");
 			} catch (IOException e1) {
 				System.err.println("Verbindung konnte nicht hergestellt werden.");
-				e1.printStackTrace(); // Connection abborted
 			}
 		} catch (IllegalArgumentException e) {
 			try {
 				writeToClient("ChatName:NotAllowed");
 			} catch (IOException e1) {
 				System.err.println("Verbindung konnte nicht hergestellt werden.");
-				e1.printStackTrace(); // Connection abborted
 			}
 		} catch (UserAlreadyExistsException e) {
 			try {
 				writeToClient("ChatName:UserAlreadyExists");
 			} catch (IOException e1) {
 				System.err.println("Verbindung konnte nicht hergestellt werden.");
-				e1.printStackTrace(); // Connection abborted
 			}
 		}  finally {
 			System.out.println("TCP Worker Thread " + this.getName() + " stopped!");
 	      /* Platz fuer neuen Thread freigeben */
 			server.workerThreadsSem.release();
 			server.workerThreads.remove(this);
+			
+            String nachricht = "CHAT_MEMBERS:UPDATED";
+            try
+            {
+                server.writeToClients(nachricht);
+                server.writeToClients(server.chatTeilnehmer.toString());
+            }
+            catch (IOException e)
+            {
+                System.err.println("Verbindung konnte nicht hergestellt werden.");
+            }
+           
 		}
 	}
 	
